@@ -1,12 +1,9 @@
-version: '3.8'
 services:
   jupyter:
     build: .
-    container_name: jupyter-notebook
-    ports:
-      - "8888:8888"  # Expone Jupyter en el puerto 8888
     volumes:
-      - ./notebooks:/home/jovyan/work  # Guarda los notebooks fuera del contenedor
-    environment:
-      - JUPYTER_ENABLE_LAB=yes  # Habilita JupyterLab
-    command: "start-notebook.sh --NotebookApp.token=''"  # Quita el token de autenticación
+      - ./notebooks:/app/notebooks
+    ports:
+      - "8888:8888"
+    container_name: jupyter_notebook
+    command: ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''", "--notebook-dir=/app/notebooks"]

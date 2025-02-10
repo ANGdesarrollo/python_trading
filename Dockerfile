@@ -1,15 +1,20 @@
-# Usa la imagen oficial de Jupyter con herramientas científicas preinstaladas
-FROM jupyter/scipy-notebook:latest
+FROM python:3.9
 
-# Copia el archivo de dependencias al contenedor
-COPY requirements.txt /home/jovyan/requirements.txt
+# Configurar el directorio de trabajo en el contenedor
+WORKDIR /app
 
-# Instala las dependencias de Python dentro del contenedor
-RUN pip install --no-cache-dir -r /home/jovyan/requirements.txt
+# Copiar el archivo de requerimientos y instalar dependencias
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Asegura permisos adecuados para el usuario jovyan
-USER root
-RUN chown -R jovyan:users /home/jovyan
+# Instalar Jupyter Notebook
+RUN pip install notebook
 
-# Regresa a usuario jovyan para evitar problemas de permisos
-USER jovyan
+# Crear directorio notebooks y establecer permisos
+RUN mkdir -p /app/notebooks
+
+# Exponer el puerto de Jupyter Notebook
+EXPOSE 8888
+
+# Comando para ejecutar Jupyter Notebook
+CMD ["jupyter", "notebook", "--ip=0.0.0.0", "--port=8888", "--no-browser", "--allow-root", "--NotebookApp.token=''"]
