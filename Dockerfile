@@ -1,17 +1,26 @@
-FROM python:3.9
+# Usar Miniconda con Python 3.10 para asegurar compatibilidad con ta-lib
+FROM continuumio/miniconda3:23.3.1-0
 
-# Configurar el directorio de trabajo en el contenedor
+# Evitar buffer en logs de Python
+ENV PYTHONUNBUFFERED 1
+
+# Crear y configurar el directorio de trabajo
 WORKDIR /app
 
-# Copiar el archivo de requerimientos y instalar dependencias
+# Copiar el archivo de requerimientos
 COPY requirements.txt ./
+
+# Instalar ta-lib con Conda
+RUN conda install -y -c conda-forge ta-lib && conda clean -afy
+
+# Instalar dependencias de Python desde requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Instalar Jupyter Notebook
 RUN pip install notebook
 
-# Crear directorio notebooks y establecer permisos
-RUN mkdir -p /app/notebooks
+# Copiar la carpeta notebooks al contenedor
+COPY notebooks /app/notebooks
 
 # Exponer el puerto de Jupyter Notebook
 EXPOSE 8888
